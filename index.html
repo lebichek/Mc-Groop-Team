@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McGroop Build Team — Подача заявки</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0c10;
+            --card-bg: rgba(18, 24, 38, 0.9);
+            --mc-green: #52b788;
+            --mc-green-glow: #2d6a4f;
+            --mc-accent: #74c69d;
+            --text-main: #f0f3f6;
+            --text-muted: #8fa3b7;
+            --border-col: #213547;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 50% 10%, rgba(82, 183, 136, 0.15), transparent 40%),
+                linear-gradient(rgba(10, 12, 16, 0.95), rgba(10, 12, 16, 0.95));
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-col);
+            border-radius: 14px;
+            padding: 30px 22px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 15%; right: 15%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--mc-green), transparent);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            color: var(--mc-green);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(82, 183, 136, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .badge-box {
+            background: rgba(82, 183, 136, 0.08);
+            border: 1px dashed var(--mc-green-glow);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--mc-accent);
+            text-align: center;
+            margin-bottom: 22px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: #d1dbe5;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0d131a;
+            border: 1px solid var(--border-col);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--mc-green);
+            box-shadow: 0 0 10px rgba(82, 183, 136, 0.3);
+            background: #111a24;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #40916c, #2d6a4f);
+            border: 1px solid var(--mc-green);
+            color: #ffffff;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(45, 106, 79, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.97);
+            background: #1b4332;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">MCGROOP</div>
+            <div class="subtitle">Набор в команду строителей</div>
+        </div>
+
+        <div class="badge-box">
+            ⛏ Вступай в команду и строй масштабные проекты вместе с нами!
+        </div>
+
+        <form action="https://api.web3forms.com/submit" method="POST">
+            
+            <input type="hidden" name="access_key" value="C3850476-3e1b-4a1a-912d-694d5a4662d5">
+            <input type="hidden" name="subject" value="Новая заявка в McGroop!">
+
+            <div class="form-group">
+                <label for="nickname">Никнейм в игре</label>
+                <input type="text" id="nickname" name="Игровой ник" required placeholder="Steve_Pro">
+            </div>
+
+            <div class="form-group">
+                <label for="age">Возраст</label>
+                <input type="number" id="age" name="Возраст" required placeholder="Например: 15">
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Связь (Telegram / Discord)</label>
+                <input type="text" id="contact" name="Контакт для связи" required placeholder="@username">
+            </div>
+
+            <div class="form-group">
+                <label for="style">Любимый стиль строительства</label>
+                <select id="style" name="Стиль">
+                    <option value="Город / Метро / Инфраструктура">Город / Метро / Инфраструктура</option>
+                    <option value="Средневековье / Фэнтези">Средневековье / Фэнтези</option>
+                    <option value="Терраформинг / Ландшафт">Терраформинг / Ландшафт</option>
+                    <option value="Модерн / Хай-тек">Модерн / Хай-тек</option>
+                    <option value="Интерьеры">Интерьеры / Декорации</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="portfolio">Ссылки на твои постройки (скриншоты)</label>
+                <textarea id="portfolio" name="Скриншоты работ" required placeholder="Ссылки на Imgur, Google Диск, посты в ТГ..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="tools">Моды / Плагины которыми владеешь</label>
+                <input type="text" id="tools" name="Инструменты" placeholder="WorldEdit, Axiom, VoxelSniper...">
+            </div>
+
+            <button type="submit" class="btn-submit">ОТПРАВИТЬ ЗАЯВКУ</button>
+        </form>
+    </div>
+
+</body>
+</html>
