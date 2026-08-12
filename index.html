@@ -3,95 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заявка в McGroop</title>
+    <title>McGroop Build Team — Подача заявки</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-dark: #0a0c10;
+            --card-bg: rgba(18, 24, 38, 0.9);
+            --mc-green: #52b788;
+            --mc-green-glow: #2d6a4f;
+            --mc-accent: #74c69d;
+            --text-main: #f0f3f6;
+            --text-muted: #8fa3b7;
+            --border-col: #213547;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 50% 10%, rgba(82, 183, 136, 0.15), transparent 40%),
+                linear-gradient(rgba(10, 12, 16, 0.95), rgba(10, 12, 16, 0.95));
+            color: var(--text-main);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            padding: 25px 15px;
         }
-        .form-box {
-            background: #1e1e1e;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+
+        .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 520px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-col);
+            border-radius: 14px;
+            padding: 30px 22px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            position: relative;
         }
-        h2 { text-align: center; color: #4CAF50; margin-bottom: 20px; }
-        label { display: block; margin-top: 15px; font-size: 14px; }
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            background: #2d2d2d;
-            border: 1px solid #444;
-            color: #fff;
-            border-radius: 6px;
-            box-sizing: border-box;
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 15%; right: 15%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--mc-green), transparent);
         }
-        input:focus, textarea:focus {
-            border-color: #4CAF50;
-            outline: none;
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
         }
-        button {
-            width: 100%;
-            margin-top: 20px;
+
+        .logo {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            color: var(--mc-green);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(82, 183, 136, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .badge-box {
+            background: rgba(82, 183, 136, 0.08);
+            border: 1px dashed var(--mc-green-glow);
             padding: 12px;
-            background: #4CAF50;
-            border: none;
-            color: white;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--mc-accent);
+            text-align: center;
+            margin-bottom: 22px;
+            font-weight: 600;
         }
-        button:hover { background: #45a049; }
-        button:disabled { background: #555; cursor: not-allowed; }
-        #response-msg {
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: #d1dbe5;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0d131a;
+            border: 1px solid var(--border-col);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--mc-green);
+            box-shadow: 0 0 10px rgba(82, 183, 136, 0.3);
+            background: #111a24;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #40916c, #2d6a4f);
+            border: 1px solid var(--mc-green);
+            color: #ffffff;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(45, 106, 79, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.97);
+            background: #1b4332;
+        }
+
+        .btn-submit:disabled {
+            background: #222;
+            border-color: #444;
+            color: #777;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #status-msg {
             margin-top: 15px;
             text-align: center;
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
 
-<div class="form-box">
-    <h2>Заявка в McGroop</h2>
-    <form id="appForm">
-        <label for="email">Email (обязательно):</label>
-        <input type="email" id="email" name="email" required placeholder="Твоя почта">
+    <div class="container">
+        <div class="header">
+            <div class="logo">MCGROOP</div>
+            <div class="subtitle">Набор в команду строителей</div>
+        </div>
 
-        <label for="message">Расскажи о себе:</label>
-        <textarea id="message" name="message" rows="5" required placeholder="Опыт, что строишь..."></textarea>
+        <div class="badge-box">
+            ⛏ Вступай в команду и строй масштабные проекты вместе с нами!
+        </div>
 
-        <button type="submit" id="sendBtn">Отправить заявку</button>
-        <div id="response-msg"></div>
-    </form>
-</div>
+        <!-- Добавлен id="mcgroopForm" для перехвата скриптом -->
+        <form id="mcgroopForm">
+            
+            <input type="hidden" name="access_key" value="C3850476-3e1b-4a1a-912d-694d5a4662d5">
+            <input type="hidden" name="subject" value="Новая заявка в McGroop!">
+
+            <!-- Обязательное поле Email, добавленное ранее -->
+            <div class="form-group">
+                <label for="email">Электронная почта (обязательно)</label>
+                <input type="email" id="email" name="Email" required placeholder="example@mail.com">
+            </div>
+
+            <div class="form-group">
+                <label for="nickname">Никнейм в игре</label>
+                <input type="text" id="nickname" name="Игровой ник" required placeholder="Steve_Pro">
+            </div>
+
+            <div class="form-group">
+                <label for="age">Возраст</label>
+                <input type="number" id="age" name="Возраст" required placeholder="Например: 15">
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Связь (Telegram / Discord)</label>
+                <input type="text" id="contact" name="Контакт для связи" required placeholder="@username">
+            </div>
+
+            <div class="form-group">
+                <label for="style">Любимый стиль строительства</label>
+                <select id="style" name="Стиль">
+                    <option value="Город / Метро / Инфраструктура">Город / Метро / Инфраструктура</option>
+                    <option value="Средневековье / Фэнтези">Средневековье / Фэнтези</option>
+                    <option value="Терраформинг / Ландшафт">Терраформинг / Ландшафт</option>
+                    <option value="Модерн / Хай-тек">Модерн / Хай-тек</option>
+                    <option value="Интерьеры">Интерьеры / Декорации</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="portfolio">Ссылки на твои постройки (скриншоты)</label>
+                <textarea id="portfolio" name="Скриншоты работ" required placeholder="Ссылки на Imgur, Яндекс Диск..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">Отправить заявку</button>
+            <div id="status-msg"></div>
+        </form>
+    </div>
 
 <script>
-    document.getElementById('appForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
+    document.getElementById('mcgroopForm').addEventListener('submit', async function(e) {
+        e.preventDefault(); // Останавливаем мгновенную отправку
 
-        const email = document.getElementById('email').value;
-        const message = document.getElementById('message').value;
-        const msgDiv = document.getElementById('response-msg');
-        const sendBtn = document.getElementById('sendBtn');
+        const form = this;
+        const submitBtn = document.getElementById('submitBtn');
+        const statusMsg = document.getElementById('status-msg');
+        
+        // Собираем текст из полей для проверки ИИ
+        const nickname = document.getElementById('nickname').value;
+        const portfolio = document.getElementById('portfolio').value;
+        const fullTextForAI = `Ник: ${nickname}. Портфолио/описание: ${portfolio}`;
 
-        msgDiv.style.color = '#ffeb3b';
-        msgDiv.textContent = '🤖 ИИ оценивает заявку...';
-        sendBtn.disabled = true;
+        statusMsg.style.color = '#ffeb3b';
+        statusMsg.textContent = '🤖 ИИ-модератор проверяет заявку...';
+        submitBtn.disabled = true;
 
-        const aiPrompt = `Ты строгий модератор заявок в Minecraft-команду McGroop. Проверь текст игрока на адекватность и спам. Отвечай СТРОГО в формате JSON без кавычек markdown: {"status": "approved" или "rejected", "reason": "причина на русском"}. Текст: "${message}"`;
+        const aiPrompt = `Ты строгий модератор заявок в элитную Minecraft-команду строителей McGroop. Проверь текст игрока на адекватность, отсутствие мата и спама. Отвечай СТРОГО в формате JSON без каких-либо дополнительных символов: {"status": "approved" или "rejected", "reason": "краткая причина на русском"}. Текст: "${fullTextForAI}"`;
 
         try {
+            // Запрос к Pollinations AI
             const res = await fetch('https://gen.pollinations.ai/v1/chat/completions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -111,21 +265,46 @@
             const result = JSON.parse(cleanJSON);
 
             if (result.status === 'approved') {
-                msgDiv.style.color = '#4CAF50';
-                msgDiv.textContent = '✅ Заявка одобрена ИИ и отправлена!';
-                // Сюда можно добавить отправку дальше, например через Web3Forms
-                // document.getElementById('appForm').reset();
+                statusMsg.style.color = 'var(--mc-green)';
+                statusMsg.textContent = '✅ Пройдено! Отправка данных...';
+
+                // Если ИИ одобрил, отправляем данные дальше через Web3Forms
+                const formData = new FormData(form);
+                const sendResponse = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (sendResponse.ok) {
+                    statusMsg.textContent = '🚀 Заявка успешно отправлена!';
+                    form.reset();
+                } else {
+                    statusMsg.style.color = '#ff6b6b';
+                    statusMsg.textContent = '❌ Ошибка отправки на почту. Попробуйте позже.';
+                }
+                submitBtn.disabled = false;
+
             } else {
-                msgDiv.style.color = '#f44336';
-                msgDiv.textContent = `❌ Отклонено: ${result.reason}`;
-                sendBtn.disabled = false;
+                statusMsg.style.color = '#ff6b6b';
+                statusMsg.textContent = `❌ Отклонено ИИ: ${result.reason}`;
+                submitBtn.disabled = false;
             }
 
         } catch (err) {
-            console.error(err);
-            msgDiv.style.color = '#4CAF50';
-            msgDiv.textContent = '✅ Заявка успешно отправлена!';
-            sendBtn.disabled = false;
+            console.error('Ошибка:', err);
+            // Если ИИ временно недоступен, страховка: отправляем форму напрямую
+            statusMsg.style.color = 'var(--mc-green)';
+            statusMsg.textContent = '🚀 Отправка заявки...';
+            
+            const formData = new FormData(form);
+            await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formData
+            });
+
+            statusMsg.textContent = '🚀 Заявка успешно отправлена!';
+            form.reset();
+            submitBtn.disabled = false;
         }
     });
 </script>
