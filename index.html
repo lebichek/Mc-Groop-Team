@@ -177,36 +177,34 @@
             ⛏ Вступай в команду и строй масштабные проекты вместе с нами!
         </div>
 
-        <!-- Добавлен id="mcgroopForm" для перехвата скриптом -->
         <form id="mcgroopForm">
-            
-            <input type="hidden" name="access_key" value="c3850476-3e1b-4a1a-912d-694d5a4662d5">
+            <!-- Ключ Web3Forms -->
+            <input type="hidden" name="access_key" value="C3850476-3e1b-4a1a-912d-694d5a4662d5">
             <input type="hidden" name="subject" value="Новая заявка в McGroop!">
 
-            <!-- Обязательное поле Email, добавленное ранее -->
             <div class="form-group">
                 <label for="email">Электронная почта (обязательно)</label>
-                <input type="email" id="email" name="Email" required placeholder="example@mail.com">
+                <input type="email" id="email" name="email" required placeholder="example@mail.com">
             </div>
 
             <div class="form-group">
                 <label for="nickname">Никнейм в игре</label>
-                <input type="text" id="nickname" name="Игровой ник" required placeholder="Steve_Pro">
+                <input type="text" id="nickname" name="nickname" required placeholder="Steve_Pro">
             </div>
 
             <div class="form-group">
                 <label for="age">Возраст</label>
-                <input type="number" id="age" name="Возраст" required placeholder="Например: 15">
+                <input type="number" id="age" name="age" min="8" max="90" required placeholder="Например: 15">
             </div>
 
             <div class="form-group">
                 <label for="contact">Связь (Telegram / Discord)</label>
-                <input type="text" id="contact" name="Контакт для связи" required placeholder="@username">
+                <input type="text" id="contact" name="contact" required placeholder="@username">
             </div>
 
             <div class="form-group">
                 <label for="style">Любимый стиль строительства</label>
-                <select id="style" name="Стиль">
+                <select id="style" name="style">
                     <option value="Город / Метро / Инфраструктура">Город / Метро / Инфраструктура</option>
                     <option value="Средневековье / Фэнтези">Средневековье / Фэнтези</option>
                     <option value="Терраформинг / Ландшафт">Терраформинг / Ландшафт</option>
@@ -217,7 +215,7 @@
 
             <div class="form-group">
                 <label for="portfolio">Ссылки на твои постройки (скриншоты)</label>
-                <textarea id="portfolio" name="Скриншоты работ" required placeholder="Ссылки на Imgur, Яндекс Диск..."></textarea>
+                <textarea id="portfolio" name="portfolio" required placeholder="Опиши свои работы или вставь ссылки..."></textarea>
             </div>
 
             <button type="submit" class="btn-submit" id="submitBtn">Отправить заявку</button>
@@ -227,85 +225,96 @@
 
 <script>
     document.getElementById('mcgroopForm').addEventListener('submit', async function(e) {
-        e.preventDefault(); // Останавливаем мгновенную отправку
+        e.preventDefault();
 
         const form = this;
         const submitBtn = document.getElementById('submitBtn');
         const statusMsg = document.getElementById('status-msg');
         
-        // Собираем текст из полей для проверки ИИ
-        const nickname = document.getElementById('nickname').value;
-        const portfolio = document.getElementById('portfolio').value;
-        const fullTextForAI = `Ник: ${nickname}. Портфолио/описание: ${portfolio}`;
+        const nickname = document.getElementById('nickname').value.trim();
+        const age = parseInt(document.getElementById('age').value);
+        const contact = document.getElementById('contact').value.trim();
+        const portfolio = document.getElementById('portfolio').value.trim();
+
+        // 1. Быстрый фильтр на очевидный мусор прямо в браузере
+        if (age < 10 || age > 60) {
+            statusMsg.style.color = '#ff6b6b';
+            statusMsg.textContent = '❌ Укажите реальный возраст (от 10 до 60 лет).';
+            return;
+        }
+
+        if (portfolio.length < 5) {
+            statusMsg.style.color = '#ff6b6b';
+            statusMsg.textContent = '❌ Пожалуйста, напишите более подробное описание или ссылки на работы.';
+            return;
+        }
 
         statusMsg.style.color = '#ffeb3b';
-        statusMsg.textContent = '🤖 ИИ-модератор проверяет заявку...';
+        statusMsg.textContent = '🤖 ИИ проверяет адекватность заявки...';
         submitBtn.disabled = true;
 
-        const aiPrompt = `Ты строгий модератор заявок в элитную Minecraft-команду строителей McGroop. Проверь текст игрока на адекватность, отсутствие мата и спама. Отвечай СТРОГО в формате JSON без каких-либо дополнительных символов: {"status": "approved" или "rejected", "reason": "краткая причина на русском"}. Текст: "${fullTextForAI}"`;
+        // 2. Строгий промпт для ИИ
+        const fullText = `Ник: ${nickname}, Возраст: ${age}, Контакт: ${contact}, Описание/Ссылки: ${portfolio}`;
+        const promptText = `Ты строгий модератор заявок в строительную команду Minecraft. 
+Отклоняй (rejected): бессмысленный набор букв (например: оссллаао, аываыв), спам, мат, троллинг, нереалистичные данные.
+Одобряй (approved): осмысленные заявки с нормальными никами и описанием работ.
+Ответь ТОЛЬКО JSON: {"status": "approved" или "rejected", "reason": "краткая причина отказа на русском"}.
+Заявка: "${fullText}"`;
 
         try {
-            // Запрос к Pollinations AI
-            const res = await fetch('https://gen.pollinations.ai/v1/chat/completions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: 'openai',
-                    messages: [
-                        { role: 'system', content: 'Отвечай только валидным JSON.' },
-                        { role: 'user', content: aiPrompt }
-                    ],
-                    temperature: 0.1
-                })
-            });
+            const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(promptText)}?json=true&model=openai`);
+            
+            if (!res.ok) throw new Error('AI service response error');
 
-            const data = await res.json();
-            const raw = data.choices[0].message.content;
-            const cleanJSON = raw.replace(/```json/g, '').replace(/```/g, '').trim();
-            const result = JSON.parse(cleanJSON);
+            const rawText = await res.text();
+            const clean = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+            const result = JSON.parse(clean);
 
-            if (result.status === 'approved') {
-                statusMsg.style.color = 'var(--mc-green)';
-                statusMsg.textContent = '✅ Пройдено! Отправка данных...';
-
-                // Если ИИ одобрил, отправляем данные дальше через Web3Forms
-                const formData = new FormData(form);
-                const sendResponse = await fetch('https://api.web3forms.com/submit', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (sendResponse.ok) {
-                    statusMsg.textContent = '🚀 Заявка успешно отправлена!';
-                    form.reset();
-                } else {
-                    statusMsg.style.color = '#ff6b6b';
-                    statusMsg.textContent = '❌ Ошибка отправки на почту. Попробуйте позже.';
-                }
-                submitBtn.disabled = false;
-
-            } else {
+            if (result.status === 'rejected') {
                 statusMsg.style.color = '#ff6b6b';
-                statusMsg.textContent = `❌ Отклонено ИИ: ${result.reason}`;
+                statusMsg.textContent = `❌ Отклонено ИИ: ${result.reason || 'Заявка похожа на спам'}`;
                 submitBtn.disabled = false;
+                return;
             }
 
         } catch (err) {
-            console.error('Ошибка:', err);
-            // Если ИИ временно недоступен, страховка: отправляем форму напрямую
-            statusMsg.style.color = 'var(--mc-green)';
-            statusMsg.textContent = '🚀 Отправка заявки...';
-            
+            console.warn('ИИ недоступен, проверка базовыми фильтрами:', err);
+            // Если ИИ лег, проверяем на бессмысленный набор символов регуляркой
+            const gibberishRegex = /(.)\1{4,}|[а-яА-Яa-zA-Z]{25,}/;
+            if (gibberishRegex.test(nickname) || gibberishRegex.test(portfolio)) {
+                statusMsg.style.color = '#ff6b6b';
+                statusMsg.textContent = '❌ Заявка содержит некорректный текст или спам.';
+                submitBtn.disabled = false;
+                return;
+            }
+        }
+
+        // 3. Отправка на Web3Forms, если всё прошло
+        statusMsg.style.color = 'var(--mc-green)';
+        statusMsg.textContent = '🚀 Отправка данных на почту...';
+
+        try {
             const formData = new FormData(form);
-            await fetch('https://api.web3forms.com/submit', {
+            const sendResponse = await fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
                 body: formData
             });
 
-            statusMsg.textContent = '🚀 Заявка успешно отправлена!';
-            form.reset();
-            submitBtn.disabled = false;
+            const data = await sendResponse.json();
+
+            if (data.success) {
+                statusMsg.textContent = '🚀 Заявка успешно принята и отправлена!';
+                form.reset();
+            } else {
+                statusMsg.style.color = '#ff6b6b';
+                statusMsg.textContent = '❌ Ошибка отправки: ' + data.message;
+            }
+        } catch (err) {
+            statusMsg.style.color = '#ff6b6b';
+            statusMsg.textContent = '❌ Ошибка соединения при отправке.';
         }
+
+        submitBtn.disabled = false;
     });
 </script>
 
