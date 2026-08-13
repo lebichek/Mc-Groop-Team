@@ -159,7 +159,7 @@
 <body>
 
     <div class="container">
-        <div class="brand-badge">McGroop TEAM</div>
+        <div class="brand-badge">McGroop ID</div>
         
         <div class="title">Заявка в команду</div>
         <div class="subtitle">Заполни форму для вступления</div>
@@ -222,11 +222,11 @@
         const contact = document.getElementById('contact').value.trim();
         let portfolio = document.getElementById('portfolio').value.trim();
 
-        // 1. Жесткий запрет русских букв в нике и контактах
+        // 1. Проверка на русские буквы в нике и контакте
         const russianLetters = /[а-яА-ЯёЁ]/;
         if (russianLetters.test(nickname) || russianLetters.test(contact)) {
             statusMsg.style.color = '#ff6b6b';
-            statusMsg.textContent = '❌ Ошибка: В нике и контакте запрещены русские буквы!';
+            statusMsg.textContent = '❌ Ошибка: Спамер съебал отсюда!';
             return;
         }
 
@@ -236,7 +236,7 @@
             document.getElementById('portfolio').value = portfolio;
         }
 
-        // 3. Защита от спам-полотна
+        // 3. Лимит символов
         if (nickname.length > 25 || contact.length > 35 || portfolio.length > 1000) {
             statusMsg.style.color = '#ff6b6b';
             statusMsg.textContent = '❌ Ошибка: Слишком много символов в полях.';
@@ -247,9 +247,9 @@
         statusMsg.textContent = '🤖 ИИ проверяет заявку...';
         submitBtn.disabled = true;
 
-        // 4. Умный ИИ-фильтр от любого спама (и на английском тоже)
+        // 4. ИИ-модератор от спама
         const aiPrompt = `Ты строгий модератор формы набора в Minecraft-команду. Проверь данные на спам, бессмысленный набор букв (например "asdfghjkl", "testtest"), оскорбления или рекламу. 
-Если это спам, бред или фейк — отклоняй (rejected). Если это нормальный игровой ник и контакт (пусть и на английском) — одобряй (approved).
+Если это спам, бред или фейк — отклоняй (rejected). Если это нормальный игровой ник и контакт — одобряй (approved).
 Отвечай СТРОГО в формате JSON без markdown: {"status": "approved" или "rejected", "reason": "краткая причина на русском"}.
 Данные: Ник: "${nickname}", Возраст: "${age}", Контакт: "${contact}", Портфолио: "${portfolio}"`;
 
