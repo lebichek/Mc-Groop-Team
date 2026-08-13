@@ -213,8 +213,9 @@
             </div>
 
             <div class="form-group">
-                <label for="portfolio">Ссылки на твои постройки (скриншоты)</label>
-                <textarea id="portfolio" name="Portfolio" required placeholder="Ссылки на Imgur, Яндекс Диск..."></textarea>
+                <label for="portfolio">Ссылки на твои постройки (если есть)</label>
+                <!-- Убрано required, чтобы поле могло быть пустым -->
+                <textarea id="portfolio" name="Portfolio" placeholder="Ссылки на Imgur, Яндекс Диск... (можно оставить пустым)"></textarea>
             </div>
 
             <button type="submit" class="btn-submit" id="submitBtn">Отправить заявку</button>
@@ -233,28 +234,33 @@
         const nickname = document.getElementById('nickname').value.trim();
         const age = document.getElementById('age').value.trim();
         const contact = document.getElementById('contact').value.trim();
-        const portfolio = document.getElementById('portfolio').value.trim();
+        let portfolio = document.getElementById('portfolio').value.trim();
 
-        // ЖЕСТКИЙ ФИЛЬТР НА ПЕРЕБОР СИМВОЛОВ (Защита от огромного спама/флуда)
+        // Если пользователь ничего не написал или написал "нету", заменяем на нормальный текст
+        if (!portfolio || portfolio.toLowerCase() === 'нету' || portfolio.toLowerCase() === 'нет') {
+            portfolio = 'Скриншоты не приложены (нет портфолио)';
+            document.getElementById('portfolio').value = portfolio;
+        }
+
+        // Защита от огромного спама
         if (nickname.length > 25 || contact.length > 35 || portfolio.length > 1000) {
             statusMsg.style.color = '#ff6b6b';
-            statusMsg.textContent = '❌ Ошибка: Слишком много символов в полях. Заявка отклонена.';
+            statusMsg.textContent = '❌ Ошибка: Слишком много символов в полях.';
             return;
         }
 
-        // Проверка на повторяющийся мусор (например, если букв/цифр слишком много подряд)
-        const spamPattern = /(.)\1{4,}/; // если один символ повторяется 5 и более раз подряд
-        if (spamPattern.test(nickname) || spamPattern.test(portfolio) || spamPattern.test(contact)) {
+        const spamPattern = /(.)\1{4,}/;
+        if (spamPattern.test(nickname) || spamPattern.test(contact)) {
             statusMsg.style.color = '#ff6b6b';
-            statusMsg.textContent = '❌ Заявка отклонена: обнаружен спам или повтор символов.';
+            statusMsg.textContent = '❌ Заявка отклонена: обнаружен спам.';
             return;
         }
 
         statusMsg.style.color = '#ffeb3b';
-        statusMsg.textContent = '🤖 Строгая проверка ИИ...';
+        statusMsg.textContent = '🤖 Проверка заявки...';
         submitBtn.disabled = true;
 
-        const aiPrompt = `Ты предельно суровый модератор. Отклоняй (rejected) сразу, если видишь: спам, бред, ахинею, слишком длинный или бессмысленный набор букв/цифр, флуд. 
+        const aiPrompt = `Ты суровый модератор. Отклоняй (rejected) только если это явный бред или спам (рандомные буквы типа "аывавы"). Если человек просто написал, что нет портфолио или указал обычные данные — одобряй (approved).
 Отвечай СТРОГО в формате JSON без markdown: {"status": "approved" или "rejected", "reason": "причина на русском"}.
 Данные: Ник: "${nickname}", Возраст: "${age}", Контакт: "${contact}", Портфолио: "${portfolio}"`;
 
@@ -288,7 +294,6 @@
             console.error('Ошибка ИИ:', err);
         }
 
-        // Отправка на почту, если всё чисто
         statusMsg.style.color = 'var(--mc-green)';
         statusMsg.textContent = '🚀 Отправка заявки...';
 
