@@ -4,19 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>McGroop Build Team — Подача заявки</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #0a0c10;
-            --card-bg: rgba(18, 24, 38, 0.9);
-            --mc-green: #52b788;
-            --mc-green-glow: #2d6a4f;
-            --mc-accent: #74c69d;
-            --text-main: #f0f3f6;
-            --text-muted: #8fa3b7;
-            --border-col: #213547;
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -25,11 +14,17 @@
         }
 
         body {
-            background-color: var(--bg-dark);
+            /* Текстура темного камня/скалы на фоне */
+            background-color: #0b0b0b;
             background-image: 
-                radial-gradient(circle at 50% 10%, rgba(82, 183, 136, 0.15), transparent 40%),
-                linear-gradient(rgba(10, 12, 16, 0.95), rgba(10, 12, 16, 0.95));
-            color: var(--text-main);
+                radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.04), transparent 50%),
+                repeating-linear-gradient(0deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 1px, transparent 1px, transparent 3px),
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)),
+                url('https://images.unsplash.com/photo-1542362567-b07e2af2953c?q=80&w=1000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #f0f3f6;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -39,89 +34,82 @@
 
         .container {
             width: 100%;
-            max-width: 520px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-col);
-            border-radius: 14px;
-            padding: 30px 22px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            position: relative;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 15%; right: 15%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--mc-green), transparent);
-        }
-
-        .header {
+            max-width: 440px;
+            background: rgba(12, 12, 12, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 35px 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
             text-align: center;
-            margin-bottom: 25px;
         }
 
-        .logo {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 20px;
-            color: var(--mc-green);
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(82, 183, 136, 0.6);
+        /* Фирменный точечный бейдж в стиле Fiply ID */
+        .brand-badge {
+            display: inline-block;
+            padding: 10px 24px;
+            border: 2px dotted rgba(255, 255, 255, 0.35);
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #fff;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
             margin-bottom: 8px;
+            letter-spacing: 0.5px;
         }
 
         .subtitle {
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-        }
-
-        .badge-box {
-            background: rgba(82, 183, 136, 0.08);
-            border: 1px dashed var(--mc-green-glow);
-            padding: 12px;
-            border-radius: 8px;
             font-size: 14px;
-            color: var(--mc-accent);
-            text-align: center;
-            margin-bottom: 22px;
+            color: #8c8c8c;
+            margin-bottom: 28px;
             font-weight: 600;
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
+            text-align: left;
         }
 
         label {
             display: block;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
             margin-bottom: 6px;
-            color: #d1dbe5;
+            color: #8c8c8c;
+            padding-left: 4px;
         }
 
         input, textarea, select {
             width: 100%;
-            padding: 12px 14px;
-            background: #0d131a;
-            border: 1px solid var(--border-col);
-            border-radius: 8px;
+            padding: 14px 18px;
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
             color: #fff;
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
             outline: none;
             transition: all 0.25s ease;
         }
 
+        input::placeholder, textarea::placeholder {
+            color: #5a5a5a;
+        }
+
         input:focus, textarea:focus, select:focus {
-            border-color: var(--mc-green);
-            box-shadow: 0 0 10px rgba(82, 183, 136, 0.3);
-            background: #111a24;
+            border-color: #ffffff;
+            background: rgba(30, 30, 30, 0.8);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
         }
 
         textarea {
@@ -129,38 +117,44 @@
             min-height: 80px;
         }
 
+        /* Главная белая кнопка как на референсе */
         .btn-submit {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             margin-top: 10px;
-            background: linear-gradient(135deg, #40916c, #2d6a4f);
-            border: 1px solid var(--mc-green);
-            color: #ffffff;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 12px;
+            background: #ffffff;
+            border: none;
+            color: #000000;
+            font-weight: 700;
+            font-size: 16px;
             cursor: pointer;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(45, 106, 79, 0.4);
-            transition: all 0.2s ease;
+            border-radius: 50px;
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-submit:hover {
+            background: #e6e6e6;
+            transform: translateY(-1px);
         }
 
         .btn-submit:active {
             transform: scale(0.97);
-            background: #1b4332;
+            background: #cccccc;
         }
 
         .btn-submit:disabled {
-            background: #222;
-            border-color: #444;
-            color: #777;
+            background: #333333;
+            color: #777777;
             cursor: not-allowed;
             box-shadow: none;
         }
 
         #status-msg {
-            margin-top: 15px;
+            margin-top: 18px;
             text-align: center;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
         }
     </style>
@@ -168,21 +162,18 @@
 <body>
 
     <div class="container">
-        <div class="header">
-            <div class="logo">MCGROOP</div>
-            <div class="subtitle">Набор в команду строителей</div>
-        </div>
-
-        <div class="badge-box">
-            ⛏ Вступай в команду и строй масштабные проекты вместе с нами!
-        </div>
+        <!-- Блок в стиле Fiply ID с точечной границей -->
+        <div class="brand-badge">McGroop ID</div>
+        
+        <div class="title">Заявка в команду</div>
+        <div class="subtitle">Заполни форму для вступления</div>
 
         <form id="mcgroopForm">
-            <input type="hidden" name="access_key" value="c3850476-3e1b-4a1a-912d-694d5a4662d5">
+            <input type="hidden" name="access_key" value="C3850476-3e1b-4a1a-912d-694d5a4662d5">
             <input type="hidden" name="subject" value="Новая заявка в McGroop!">
 
             <div class="form-group">
-                <label for="email">Электронная почта (обязательно)</label>
+                <label for="email">Электронная почта</label>
                 <input type="email" id="email" name="Email" required placeholder="example@mail.com">
             </div>
 
@@ -193,7 +184,7 @@
 
             <div class="form-group">
                 <label for="age">Возраст</label>
-                <input type="number" id="age" name="Age" required placeholder="Например: 15">
+                <input type="number" id="age" name="Age" required placeholder="15">
             </div>
 
             <div class="form-group">
@@ -202,7 +193,7 @@
             </div>
 
             <div class="form-group">
-                <label for="style">Любимый стиль строительства</label>
+                <label for="style">Стиль строительства</label>
                 <select id="style" name="Style">
                     <option value="Город / Метро / Инфраструктура">Город / Метро / Инфраструктура</option>
                     <option value="Средневековье / Фэнтези">Средневековье / Фэнтези</option>
@@ -213,12 +204,11 @@
             </div>
 
             <div class="form-group">
-                <label for="portfolio">Ссылки на твои постройки (если есть)</label>
-                <!-- Убрано required, чтобы поле могло быть пустым -->
-                <textarea id="portfolio" name="Portfolio" placeholder="Ссылки на Imgur, Яндекс Диск... (можно оставить пустым)"></textarea>
+                <label for="portfolio">Портфолио (если есть)</label>
+                <textarea id="portfolio" name="Portfolio" placeholder="Ссылки на Imgur, Яндекс Диск... (можно пусто)"></textarea>
             </div>
 
-            <button type="submit" class="btn-submit" id="submitBtn">Отправить заявку</button>
+            <button type="submit" class="btn-submit" id="submitBtn">далее</button>
             <div id="status-msg"></div>
         </form>
     </div>
@@ -236,7 +226,7 @@
         const contact = document.getElementById('contact').value.trim();
         let portfolio = document.getElementById('portfolio').value.trim();
 
-        // Если пользователь ничего не написал или написал "нету", заменяем на нормальный текст
+        // Автозамена для пустых ответов и фразы "нету"
         if (!portfolio || portfolio.toLowerCase() === 'нету' || portfolio.toLowerCase() === 'нет') {
             portfolio = 'Скриншоты не приложены (нет портфолио)';
             document.getElementById('portfolio').value = portfolio;
@@ -256,7 +246,7 @@
             return;
         }
 
-        statusMsg.style.color = '#ffeb3b';
+        statusMsg.style.color = '#cccccc';
         statusMsg.textContent = '🤖 Проверка заявки...';
         submitBtn.disabled = true;
 
@@ -294,7 +284,7 @@
             console.error('Ошибка ИИ:', err);
         }
 
-        statusMsg.style.color = 'var(--mc-green)';
+        statusMsg.style.color = '#cccccc';
         statusMsg.textContent = '🚀 Отправка заявки...';
 
         try {
@@ -307,7 +297,8 @@
             const data = await sendResponse.json();
 
             if (data.success) {
-                statusMsg.textContent = '🚀 Заявка успешно отправлена!';
+                statusMsg.style.color = '#ffffff';
+                statusMsg.textContent = '✓ Заявка успешно отправлена!';
                 form.reset();
             } else {
                 statusMsg.style.color = '#ff6b6b';
