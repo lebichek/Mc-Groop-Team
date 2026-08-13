@@ -217,12 +217,12 @@
         const submitBtn = document.getElementById('submitBtn');
         const statusMsg = document.getElementById('status-msg');
         
-        const nickname = document.getElementById('nickname').value.trim();
+        const nickname = document.getElementById('nickname'].value.trim();
         const age = document.getElementById('age').value.trim();
         const contact = document.getElementById('contact').value.trim();
         let portfolio = document.getElementById('portfolio').value.trim();
 
-        // ЖЕСТКИЙ БАН РУССКИХ БУКВ В ПОЛЯХ (НИК, КОНТАКТ)
+        // 1. Жесткий запрет русских букв в нике и контактах
         const russianLetters = /[а-яА-ЯёЁ]/;
         if (russianLetters.test(nickname) || russianLetters.test(contact)) {
             statusMsg.style.color = '#ff6b6b';
@@ -230,13 +230,13 @@
             return;
         }
 
-        // Автозамена для пустых ответов и фразы "нету" в портфолио
+        // 2. Обработка пустого портфолио
         if (!portfolio || portfolio.toLowerCase() === 'нету' || portfolio.toLowerCase() === 'нет') {
             portfolio = 'Скриншоты не приложены (нет портфолио)';
             document.getElementById('portfolio').value = portfolio;
         }
 
-        // Защита от огромного спама
+        // 3. Защита от спам-полотна
         if (nickname.length > 25 || contact.length > 35 || portfolio.length > 1000) {
             statusMsg.style.color = '#ff6b6b';
             statusMsg.textContent = '❌ Ошибка: Слишком много символов в полях.';
@@ -244,8 +244,47 @@
         }
 
         statusMsg.style.color = '#cccccc';
-        statusMsg.textContent = '🚀 Отправка заявки...';
+        statusMsg.textContent = '🤖 ИИ проверяет заявку...';
         submitBtn.disabled = true;
+
+        // 4. Умный ИИ-фильтр от любого спама (и на английском тоже)
+        const aiPrompt = `Ты строгий модератор формы набора в Minecraft-команду. Проверь данные на спам, бессмысленный набор букв (например "asdfghjkl", "testtest"), оскорбления или рекламу. 
+Если это спам, бред или фейк — отклоняй (rejected). Если это нормальный игровой ник и контакт (пусть и на английском) — одобряй (approved).
+Отвечай СТРОГО в формате JSON без markdown: {"status": "approved" или "rejected", "reason": "краткая причина на русском"}.
+Данные: Ник: "${nickname}", Возраст: "${age}", Контакт: "${contact}", Портфолио: "${portfolio}"`;
+
+        try {
+            const res = await fetch('https://gen.pollinations.ai/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: 'openai',
+                    messages: [
+                        { role: 'system', content: 'Отвечай только валидным JSON.' },
+                        { role: 'user', content: aiPrompt }
+                    ],
+                    temperature: 0.1
+                })
+            });
+
+            const data = await res.json();
+            const raw = data.choices[0].message.content;
+            const cleanJSON = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+            const result = JSON.parse(cleanJSON);
+
+            if (result.status === 'rejected') {
+                statusMsg.style.color = '#ff6b6b';
+                statusMsg.textContent = `❌ Отклонено: ${result.reason}`;
+                submitBtn.disabled = false;
+                return;
+            }
+
+        } catch (err) {
+            console.error('Ошибка ИИ:', err);
+        }
+
+        statusMsg.style.color = '#cccccc';
+        statusMsg.textContent = '🚀 Отправка заявки...';
 
         try {
             const formData = new FormData(form);
