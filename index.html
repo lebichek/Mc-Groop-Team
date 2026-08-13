@@ -158,7 +158,6 @@
         }
 
         #status-msg {
-            MsoMargin-top-alt: 15px;
             margin-top: 15px;
             text-align: center;
             font-size: 15px;
@@ -179,7 +178,7 @@
         </div>
 
         <form id="mcgroopForm">
-            <input type="hidden" name="access_key" value="c3850476-3e1b-4a1a-912d-694d5a4662d5">
+            <input type="hidden" name="access_key" value="C3850476-3e1b-4a1a-912d-694d5a4662d5">
             <input type="hidden" name="subject" value="Новая заявка в McGroop!">
 
             <div class="form-group">
@@ -236,21 +235,28 @@
         const contact = document.getElementById('contact').value.trim();
         const portfolio = document.getElementById('portfolio').value.trim();
 
+        // ЖЕСТКИЙ ФИЛЬТР НА ПЕРЕБОР СИМВОЛОВ (Защита от огромного спама/флуда)
+        if (nickname.length > 25 || contact.length > 35 || portfolio.length > 1000) {
+            statusMsg.style.color = '#ff6b6b';
+            statusMsg.textContent = '❌ Ошибка: Слишком много символов в полях. Заявка отклонена.';
+            return;
+        }
+
+        // Проверка на повторяющийся мусор (например, если букв/цифр слишком много подряд)
+        const spamPattern = /(.)\1{4,}/; // если один символ повторяется 5 и более раз подряд
+        if (spamPattern.test(nickname) || spamPattern.test(portfolio) || spamPattern.test(contact)) {
+            statusMsg.style.color = '#ff6b6b';
+            statusMsg.textContent = '❌ Заявка отклонена: обнаружен спам или повтор символов.';
+            return;
+        }
+
         statusMsg.style.color = '#ffeb3b';
-        statusMsg.textContent = '🤖 Жёсткая проверка ИИ...';
+        statusMsg.textContent = '🤖 Строгая проверка ИИ...';
         submitBtn.disabled = true;
 
-        // Жесткий системный промпт
-        const aiPrompt = `Ты предельно суровый модератор элитной команды строителей Minecraft. Твоя задача — безжалостно отсеивать любой спам, шутки, ахинею, случайный набор букв (например "оолалаоа", "аывавы"), оскорбления и пустые заявки. 
-Если текст выглядит как бред или спам — сразу ставь статус rejected.
-Отвечай СТРОГО в формате JSON без markdown: {"status": "approved" или "rejected", "reason": "краткая причина на русском"}.
-Проверяемые данные: 
-Ник: "${nickname}"
-Возраст: "${age}"
-Контакт: "${contact}"
-Портфолио/Описание: "${portfolio}"`;
-
-        let isApproved = false;
+        const aiPrompt = `Ты предельно суровый модератор. Отклоняй (rejected) сразу, если видишь: спам, бред, ахинею, слишком длинный или бессмысленный набор букв/цифр, флуд. 
+Отвечай СТРОГО в формате JSON без markdown: {"status": "approved" или "rejected", "reason": "причина на русском"}.
+Данные: Ник: "${nickname}", Возраст: "${age}", Контакт: "${contact}", Портфолио: "${portfolio}"`;
 
         try {
             const res = await fetch('https://gen.pollinations.ai/v1/chat/completions', {
@@ -259,7 +265,7 @@
                 body: JSON.stringify({
                     model: 'openai',
                     messages: [
-                        { role: 'system', content: 'Ты бот-модератор. Отвечай строго валидным JSON.' },
+                        { role: 'system', content: 'Отвечай только валидным JSON.' },
                         { role: 'user', content: aiPrompt }
                     ],
                     temperature: 0.1
@@ -276,49 +282,35 @@
                 statusMsg.textContent = `❌ Отклонено ИИ: ${result.reason}`;
                 submitBtn.disabled = false;
                 return;
-            } else {
-                isApproved = true;
             }
 
         } catch (err) {
-            console.error('Ошибка ИИ, включаем встроенный фильтр-щит:', err);
-            
-            // Защитная страховка (если ИИ лег): баним явный бред в браузере
-            const gibberishTest = /(.)\1{3,}|[а-яА-Яa-zA-Z]{20,}/;
-            if (gibberishTest.test(nickname) || gibberishTest.test(portfolio) || portfolio.length < 5) {
-                statusMsg.style.color = '#ff6b6b';
-                statusMsg.textContent = '❌ Заявка отклонена: обнаружен спам или бессмысленный текст.';
-                submitBtn.disabled = false;
-                return;
-            }
-            isApproved = true;
+            console.error('Ошибка ИИ:', err);
         }
 
-        // Если ИИ подтвердил адекватность — отправляем на почту
-        if (isApproved) {
-            statusMsg.style.color = 'var(--mc-green)';
-            statusMsg.textContent = '🚀 Заявка прошла проверку! Отправка...';
+        // Отправка на почту, если всё чисто
+        statusMsg.style.color = 'var(--mc-green)';
+        statusMsg.textContent = '🚀 Отправка заявки...';
 
-            try {
-                const formData = new FormData(form);
-                const sendResponse = await fetch('https://api.web3forms.com/submit', {
-                    method: 'POST',
-                    body: formData
-                });
+        try {
+            const formData = new FormData(form);
+            const sendResponse = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formData
+            });
 
-                const data = await sendResponse.json();
+            const data = await sendResponse.json();
 
-                if (data.success) {
-                    statusMsg.textContent = '🚀 Заявка успешно отправлена!';
-                    form.reset();
-                } else {
-                    statusMsg.style.color = '#ff6b6b';
-                    statusMsg.textContent = '❌ Ошибка отправки на почту.';
-                }
-            } catch (err) {
+            if (data.success) {
+                statusMsg.textContent = '🚀 Заявка успешно отправлена!';
+                form.reset();
+            } else {
                 statusMsg.style.color = '#ff6b6b';
-                statusMsg.textContent = '❌ Ошибка сети.';
+                statusMsg.textContent = '❌ Ошибка отправки на почту.';
             }
+        } catch (err) {
+            statusMsg.style.color = '#ff6b6b';
+            statusMsg.textContent = '❌ Ошибка сети.';
         }
 
         submitBtn.disabled = false;
