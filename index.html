@@ -14,7 +14,6 @@
         }
 
         body {
-            /* Текстура темного камня/скалы на фоне */
             background-color: #0b0b0b;
             background-image: 
                 radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.04), transparent 50%),
@@ -44,7 +43,6 @@
             text-align: center;
         }
 
-        /* Фирменный точечный бейдж в стиле Fiply ID */
         .brand-badge {
             display: inline-block;
             padding: 10px 24px;
@@ -117,7 +115,6 @@
             min-height: 80px;
         }
 
-        /* Главная белая кнопка как на референсе */
         .btn-submit {
             width: 100%;
             padding: 16px;
@@ -162,8 +159,7 @@
 <body>
 
     <div class="container">
-        <!-- Блок в стиле Fiply ID с точечной границей -->
-        <div class="brand-badge">McGroop</div>
+        <div class="brand-badge">McGroop TEAM</div>
         
         <div class="title">Заявка в команду</div>
         <div class="subtitle">Заполни форму для вступления</div>
@@ -178,7 +174,7 @@
             </div>
 
             <div class="form-group">
-                <label for="nickname">Никнейм в игре</label>
+                <label for="nickname">Никнейм в игре (латиница)</label>
                 <input type="text" id="nickname" name="Nickname" required placeholder="Steve_Pro">
             </div>
 
@@ -204,8 +200,8 @@
             </div>
 
             <div class="form-group">
-                <label for="portfolio">Портфолио (если есть)</label>
-                <textarea id="portfolio" name="Portfolio" placeholder="Ссылки на Imgur, Яндекс Диск... (можно пусто)"></textarea>
+                <label for="portfolio">Портфолио (можно на русском)</label>
+                <textarea id="portfolio" name="Portfolio" placeholder="Ссылки или текст (можно пусто)"></textarea>
             </div>
 
             <button type="submit" class="btn-submit" id="submitBtn">далее</button>
@@ -226,7 +222,15 @@
         const contact = document.getElementById('contact').value.trim();
         let portfolio = document.getElementById('portfolio').value.trim();
 
-        // Автозамена для пустых ответов и фразы "нету"
+        // ЖЕСТКИЙ БАН РУССКИХ БУКВ В ПОЛЯХ (НИК, КОНТАКТ)
+        const russianLetters = /[а-яА-ЯёЁ]/;
+        if (russianLetters.test(nickname) || russianLetters.test(contact)) {
+            statusMsg.style.color = '#ff6b6b';
+            statusMsg.textContent = '❌ Ошибка: В нике и контакте запрещены русские буквы!';
+            return;
+        }
+
+        // Автозамена для пустых ответов и фразы "нету" в портфолио
         if (!portfolio || portfolio.toLowerCase() === 'нету' || portfolio.toLowerCase() === 'нет') {
             portfolio = 'Скриншоты не приложены (нет портфолио)';
             document.getElementById('portfolio').value = portfolio;
@@ -239,53 +243,9 @@
             return;
         }
 
-        const spamPattern = /(.)\1{4,}/;
-        if (spamPattern.test(nickname) || spamPattern.test(contact)) {
-            statusMsg.style.color = '#ff6b6b';
-            statusMsg.textContent = '❌ Заявка отклонена: обнаружен спам.';
-            return;
-        }
-
-        statusMsg.style.color = '#cccccc';
-        statusMsg.textContent = '🤖 Проверка заявки...';
-        submitBtn.disabled = true;
-
-        const aiPrompt = `Ты суровый модератор. Отклоняй (rejected) только если это явный бред или спам (рандомные буквы типа "аывавы"). Если человек просто написал, что нет портфолио или указал обычные данные — одобряй (approved).
-Отвечай СТРОГО в формате JSON без markdown: {"status": "approved" или "rejected", "reason": "причина на русском"}.
-Данные: Ник: "${nickname}", Возраст: "${age}", Контакт: "${contact}", Портфолио: "${portfolio}"`;
-
-        try {
-            const res = await fetch('https://gen.pollinations.ai/v1/chat/completions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: 'openai',
-                    messages: [
-                        { role: 'system', content: 'Отвечай только валидным JSON.' },
-                        { role: 'user', content: aiPrompt }
-                    ],
-                    temperature: 0.1
-                })
-            });
-
-            const data = await res.json();
-            const raw = data.choices[0].message.content;
-            const cleanJSON = raw.replace(/```json/g, '').replace(/```/g, '').trim();
-            const result = JSON.parse(cleanJSON);
-
-            if (result.status === 'rejected') {
-                statusMsg.style.color = '#ff6b6b';
-                statusMsg.textContent = `❌ Отклонено ИИ: ${result.reason}`;
-                submitBtn.disabled = false;
-                return;
-            }
-
-        } catch (err) {
-            console.error('Ошибка ИИ:', err);
-        }
-
         statusMsg.style.color = '#cccccc';
         statusMsg.textContent = '🚀 Отправка заявки...';
+        submitBtn.disabled = true;
 
         try {
             const formData = new FormData(form);
